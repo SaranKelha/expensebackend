@@ -1,0 +1,30 @@
+
+
+services:
+  # The PostgreSQL Database Service
+  db:
+    image: postgres:13
+    container_name: postgres_db2
+    volumes:
+      - app2_postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env # Load environment variables from .env file
+    ports:
+      - "5432:5432" # Expose port for optional direct access
+    restart: unless-stopped
+
+  # The FastAPI Application Service
+  app:
+    container_name: fastapiapp
+    build: . # Build the image from the Dockerfile in the current directory
+    ports:
+      - "8000:8000" # Map host port 8000 to container port 8000
+    env_file:
+      - ./.env # Load environment variables from .env file
+    depends_on:
+      - db # This service depends on the 'db' service to be running
+    restart: unless-stopped
+
+volumes:
+  app2_postgres_data:
+    # This named volume persists the database data
